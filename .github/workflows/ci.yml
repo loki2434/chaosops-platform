@@ -28,7 +28,7 @@ jobs:
           pip install pytest
 
       - name: run tests
-        run: pytest
+        run: pytest test/
 
       - name: Build Docker image
         run: |
