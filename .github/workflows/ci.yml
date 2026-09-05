@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-  pull_requests:
+  pull_request:
     branches:
       - main
 
@@ -33,5 +33,5 @@ jobs:
       - name: Build Docker image
         run: |
           docker build \
-            -f Docker/Dockerfile
-            -t chaosops-app:${{ github.sha }} .
+            -f Docker/Dockerfile \
+            -t chaosops-app:latest .
