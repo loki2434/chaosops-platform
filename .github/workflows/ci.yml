@@ -3,7 +3,7 @@ name: ChaosOps CI
 on:
   push:
     branches:
-       - main
+      - main
   pull_requests:
     branches:
       - main
@@ -12,26 +12,26 @@ jobs:
   test-and-build:
     runs-on: ubuntu-latest
 
-  steps:
-    - name: checkout repository
-      uses: actions/checkout@v4
+    steps:
+      - name: checkout repository
+        uses: actions/checkout@v4
 
-    - name: set up python
-      uses: action/setup-python@v5
-      with:
-        python-version: "3.12"
+      - name: set up python
+        uses: action/setup-python@v5
+        with:
+          python-version: "3.12"
 
-    - name: Install dependencies
-      run: |
-        python3 -m pip install --upgrade pip
-        pip install -r requirements.txt
-        pip install pytest
+      - name: Install dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
 
-    - name: run tests
-      run: pytest
+      - name: run tests
+        run: pytest
 
-    - name: Build Docker image
-      run: |
-        docker build \
-          -f Docker/Dockerfile
-          -t chaosops-app:${{ github.sha }} .
+      - name: Build Docker image
+        run: |
+          docker build \
+            -f Docker/Dockerfile
+            -t chaosops-app:${{ github.sha }} .
