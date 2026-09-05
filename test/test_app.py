@@ -1,5 +1,9 @@
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 import pytest
-from app import app # This imports your existing Flask app directly
+from app.app import app  # Import from the app/app.py module
 
 @pytest.fixture
 def client():
