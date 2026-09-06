@@ -1,4 +1,4 @@
-name: ChaosOps CI
+name: ChaosOps CI/CD
 
 on:
   push:
@@ -30,8 +30,18 @@ jobs:
       - name: run tests
         run: pytest test/
 
-      - name: Build Docker image
-        run: |
-          docker build \
-            -f Docker/Dockerfile \
-            -t chaosops-app:latest .
+      - name: Log in to Docker hub
+        uses: docker/login-activity@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./docker/Dockerfile
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/chaosops-app:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/chaosops-app:${{ github.sha }}
