@@ -1,0 +1,4 @@
+---
+kubernetes_version: "1.30"
+pod_network_cidr: "192.168.0.0/16"   # matches Calico's default
+container_runtime: containerd

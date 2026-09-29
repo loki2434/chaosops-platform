@@ -1,0 +1,33 @@
+---
+# Full cluster bootstrap: run this single playbook after `terraform apply`.
+#
+#   cd ansible
+#   ansible-playbook -i inventory/hosts.ini site.yml
+#
+# It runs in order: common prep on every node -> containerd/kubeadm/kubelet
+# on every node -> `kubeadm init` on the master -> join command distributed
+# to and executed on every worker.
+
+- name: Prepare all nodes (OS-level prerequisites)
+  hosts: all
+  become: true
+  roles:
+    - common
+
+- name: Install container runtime and Kubernetes packages on all nodes
+  hosts: all
+  become: true
+  roles:
+    - k8s-common
+
+- name: Initialize Kubernetes control plane
+  hosts: master
+  become: true
+  roles:
+    - k8s-master
+
+- name: Join worker nodes to the cluster
+  hosts: workers
+  become: true
+  roles:
+    - k8s-worker

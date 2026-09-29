@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chaosops-app
+  namespace: chaosops
+  labels:
+    app: chaosops-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: chaosops-app
+  template:
+    metadata:
+      labels:
+        app: chaosops-app
+      annotations:
+        # Picked up by the kubernetes-pods scrape job in
+        # k8s/monitoring/02-prometheus-configmap.yaml. Scraping will 404
+        # until /metrics is added to app/app.py (see docs/deploy.md).
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "5000"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: chaosops-app
+          # Built and pushed by .github/workflows/ci.yml — replace
+          # <dockerhub-username> with the real DOCKERHUB_USERNAME, or template
+          # this with kustomize/envsubst in a follow-up CD step.
+          image: <dockerhub-username>/chaosops-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: PORT
+              value: "5000"
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 128Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 5000
+            initialDelaySeconds: 15
+            periodSeconds: 20

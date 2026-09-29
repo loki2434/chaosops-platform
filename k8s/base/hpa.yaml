@@ -1,0 +1,23 @@
+# Requires metrics-server in the cluster (installed by kustomization.yaml
+# below via the metrics-server addon manifest). Hit the /cpu endpoint under
+# load (e.g. with `hey` or `ab`) to watch this scale replicas out — this is
+# what the app's /cpu route exists for.
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: chaosops-app-hpa
+  namespace: chaosops
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: chaosops-app
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 60

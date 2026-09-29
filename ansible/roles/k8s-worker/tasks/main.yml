@@ -1,0 +1,17 @@
+---
+- name: Check if this node has already joined the cluster
+  stat:
+    path: /etc/kubernetes/kubelet.conf
+  register: already_joined
+
+- name: Copy join command from the Ansible control node
+  copy:
+    src: /tmp/ansible-fetched/kubeadm_join_command.sh
+    dest: /tmp/kubeadm_join_command.sh
+    mode: '0755'
+  when: not already_joined.stat.exists
+
+- name: Run kubeadm join
+  command: bash /tmp/kubeadm_join_command.sh
+  when: not already_joined.stat.exists
+  register: join_result
